@@ -1,0 +1,84 @@
+.movie_app {
+  display: flex;
+}
+.movie_app .aside {
+  display: inline-flex;
+  flex-direction: column;
+  color: #757A81;
+  height: 100vh;
+  background: #1E2022;
+  box-sizing: border-box;
+  width: 70px;
+  text-align: center;
+  font-size: 12px;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+.movie_app .aside .back,
+.movie_app .aside .back_active {
+  margin: 10px auto;
+  box-sizing: border-box;
+  border-radius: 5px;
+  width: 33px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #2C2F33;
+  background: #2F3134;
+  cursor: pointer;
+}
+.movie_app .aside .back_active {
+  color: #CE4D7A;
+}
+.movie_app .aside .home,
+.movie_app .aside .dynamic,
+.movie_app .aside .me,
+.movie_app .aside .setting,
+.movie_app .aside .active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  vertical-align: inherit;
+  margin-top: 30px;
+  cursor: pointer;
+}
+.movie_app .aside .home.home Icon,
+.movie_app .aside .dynamic.home Icon,
+.movie_app .aside .me.home Icon,
+.movie_app .aside .setting.home Icon,
+.movie_app .aside .active.home Icon {
+  background-color: rebeccapurple;
+}
+.movie_app .aside .home.setting,
+.movie_app .aside .dynamic.setting,
+.movie_app .aside .me.setting,
+.movie_app .aside .setting.setting,
+.movie_app .aside .active.setting {
+  margin-top: calc(70vh - 120px);
+}
+.movie_app .aside .home span,
+.movie_app .aside .dynamic span,
+.movie_app .aside .me span,
+.movie_app .aside .setting span,
+.movie_app .aside .active span {
+  font-weight: bold;
+  margin-top: 2px;
+  font-family: "Arial Unicode MS", monospace;
+}
+.movie_app .aside .active {
+  color: #CE4D7A;
+}
+.movie_app .aside .active span {
+  color: #CE4D7A;
+}
+.movie_app .aside .active_setting {
+  color: #CE4D7A;
+  margin-top: calc(70vh - 120px);
+}
+.movie_app .content_main {
+  background: rebeccapurple;
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+/*# sourceMappingURL=app.css.map */

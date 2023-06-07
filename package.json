@@ -1,0 +1,9 @@
+{
+	"devDependencies": {
+		"less": "^4.1.3",
+		"less-loader": "^11.1.2"
+	},
+	"dependencies": {
+		"supercons": "^0.0.1"
+	}
+}
