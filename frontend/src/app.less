@@ -1,14 +1,15 @@
 .movie_app{
   display: flex;
-
+  overflow: hidden;
   .aside {
     display: inline-flex;
     flex-direction: column;
     color: #757A81;
     height: 100vh;
     background: #1E2022;
+    position: fixed;
     box-sizing: border-box;
-    width: 70px;
+    width: 80px !important;
     text-align: center;
     font-size: 12px;
     -webkit-font-smoothing: subpixel-antialiased;
@@ -66,6 +67,7 @@
   .content_main{
     flex-grow: 1;
     flex-shrink: 0;
+    overflow: hidden;
   }
 }
 

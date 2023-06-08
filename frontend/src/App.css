@@ -64,7 +64,7 @@
 .movie_app .aside .active span {
   font-weight: bold;
   margin-top: 2px;
-  font-family: "Arial Unicode MS", monospace;
+  font-family: "Helvetica", serif;
 }
 .movie_app .aside .active {
   color: #CE4D7A;
@@ -77,7 +77,6 @@
   margin-top: calc(70vh - 120px);
 }
 .movie_app .content_main {
-  background: rebeccapurple;
   flex-grow: 1;
   flex-shrink: 0;
 }
