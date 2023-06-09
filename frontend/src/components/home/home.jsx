@@ -1,14 +1,22 @@
 import "./home.less";
 import Icon from "supercons";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 import Movie from "../movie/movie.jsx";
-import {BrowserRouter as Router, Route,Routes,Link } from "react-router-dom";
+import { Route,Routes,useNavigate} from "react-router-dom";
+import Tv from "../tv/tv.jsx";
+
 
 export default function Home() {
     const [activityMenu, setActivityMenu] = useState("movie");
+    const navigate = useNavigate();
     const clickMenu = (menu) => {
         setActivityMenu(menu);
+        navigate("/home/"+menu,{replace: false});
+    }
+
+    if (activityMenu===""){
+        navigate("/home/movie",{replace: false})
     }
 
 
@@ -36,13 +44,12 @@ export default function Home() {
                 </div>
             </header>
 
-            <div className={"home_detail_main"}>
-                <Movie />
-                {/*<Router>*/}
-                {/*    <Routes>*/}
-                {/*        <Route path="/movie" element={<Movie/>}></Route>*/}
-                {/*    </Routes>*/}
-                {/*</Router>*/}
+            <div>
+                <Routes>
+                    <Route index element={<Movie/>}></Route>
+                    <Route path="/movie"  element={<Movie/>}></Route>
+                    <Route path="/tv" element={<Tv/>}></Route>
+                </Routes>
             </div>
         </div>
     )
