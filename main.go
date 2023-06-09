@@ -21,6 +21,7 @@ func main() {
 		Title:     "",
 		MinWidth:  1200,
 		MinHeight: 600,
+		MaxWidth:  1400,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

@@ -1,6 +1,8 @@
 import {useState} from 'react';
 import Icon from "supercons"
 
+import {BrowserRouter as Router, Route,Routes,Link } from "react-router-dom";
+
 import Home from "./components/home/home.jsx"
 
 import "./app.less";
@@ -35,7 +37,11 @@ const [activateItem,setActivateItem]=useState("home")
                 </div>
             </aside>
             <main className={"content_main"}>
-                <Home/>
+                <Router>
+                    <Routes>
+                        <Route path="/" element={<Home/>}></Route>
+                    </Routes>
+                </Router>
             </main>
         </div>
     )
