@@ -6,3 +6,18 @@ html,body{
     height: 100vh;
     overflow: hidden;
 }
+
+/* 取消滚动条hover效果 */
+::-webkit-scrollbar-thumb:hover {
+    background: none;
+}
+
+/* 保持原来的滚动条粗细 */
+::-webkit-scrollbar-thumb {
+    background: inherit;
+}
+
+/* 可选：取消滚动条hover效果时的颜色变化 */
+::-webkit-scrollbar-thumb:hover {
+    background: none;
+}
