@@ -4,97 +4,127 @@ import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 
 export default function Movie() {
-    const [movieLists, setMovieLists] = useState([])
+    const page=useRef(1)
     const scrollRef = useRef(null);
+    const isInit = useRef(false);
 
-    useEffect(() => {
-        axios.get(`http://127.0.0.1:8080/api/v1/movie/discover?page=1`).then((res) => {
-            setMovieLists(res.data.results)
-        })
-        console.log("======================================1")
-    }, [])
+    const canScroll = useRef(true);
 
+    let url = 'http://127.0.0.1:8081/api/v1/movie/discover?page='
 
-    useEffect(() => {
-        const node = scrollRef.current;
-        if (!node) {
-            return;
+    const [movieLists, setMovieLists] = useState([])
+    useEffect(() =>{
+        if (!isInit.current){
+            isInit.current =true
+            let requestUrl = `${url}${page.current}`
+            axios.get(requestUrl).then((res) => {
+                setMovieLists(res.data.results)
+
+                page.current=page.current+1
+
+                console.log("init movie lists",page.current)
+            })
         }
 
-        debounce(node.addEventListener('scroll', (event) => {
-            console.log("开始滚动了:", node.scrollHeight - node.scrollTop, node.clientHeight)
-            if (node.scrollHeight - node.scrollTop <= node.clientHeight) {
-                const CancelToken = axios.CancelToken;
-                const source = CancelToken.source();
-                if (movieLists.page+1==="NaN"){
-                    return;
-                }
-                let url = `http://127.0.0.1:8080/api/v1/movie/discover?page=${movieLists.page + 1}`
-                console.log("请求url:", url)
-                axios.get(url,{cancelToken: source.token}).then((res) => {
-                    setMovieLists([...movieLists, ...res.data.results])
-                    console.log("到底了", movieLists)
-                })
-
-
-            }
-        }), 1000)
 
         return () => {
-            node.removeEventListener('scroll', () => {
-            });
-        };
-    }, [movieLists.page]);
-
-
-    const debounce = (fn, delay) => {
-        let timeout;
-        return function () {
-            clearTimeout(timeout)
-            timeout = setTimeout(() => {
-                fn()
-            }, delay)
+            isInit.current=true
+            page.current=1
+            setMovieLists([])
         }
-    }
+    },[])
 
-    const throttle = (fn, delay) => {
-        let timer;
-        return function () {
-            if (!timer) {
-                fn.apply(this, arguments)
+
+
+
+    let fetchMoreData = () => {
+        if (!page.current){
+            return ""
+        }
+        let requestUrl = `${url}${page.current}`
+        setTimeout(()=>{
+            canScroll.current=true
+        },5000)
+
+        console.log("请求url:", requestUrl)
+        axios.get(requestUrl).then((res) => {
+            if (res.data && res.data.results && res.data.results.length===0){
+                return
+            }
+            let newMovieLists = movieLists
+            newMovieLists.push(...res.data.results)
+            setMovieLists(newMovieLists)
+        }).finally(()=>{
+            page.current=page.current+1
+            canScroll.current=true
+            console.log("movie lists:", movieLists.length,"page:",page.current)
+        })
+    };
+
+
+    const throttle=(fn, delay=50) =>{
+        let timer = null
+        return function(...args) {
+            if(!timer) {   //n秒内一直触发，timer一直为null，就不会执行判断语句中的逻辑（关键）
                 timer = setTimeout(() => {
-                    clearTimeout(timer)
+                    fn.apply(this, args)
                     timer = null
                 }, delay)
             }
         }
     }
 
+    useEffect(() => {
+        const node = scrollRef.current;
+        if (!node && !canScroll.current) {
+            return;
+        }
 
-    return (<div className={"movie_content"} ref={scrollRef}>
-            {movieLists.results?.map((movie, index) => {
-                return (<div className={"movie_detail_items"} key={index}>
-                    <div className={"movie_detail_item_cover"}>
-                        <img src={`https://image.tmdb.org/t/p/w342/${movie.poster_path}`} alt="变形金刚"/>
-                    </div>
-                    <div className={"movie_detail_item_desc"}>
-                        {movie.overview}
-                    </div>
-                    <div className={"movie_detail_items_tags"}>
+
+        node.addEventListener("scroll", (e) => {
+            // console.log("scroll event:", node.scrollHeight - node.scrollTop, node.clientHeight)
+            if (node.scrollHeight - node.scrollTop > node.clientHeight){
+                canScroll.current=true
+                return
+            }
+            if ((node.scrollHeight - node.scrollTop <= node.clientHeight) && canScroll.current) {
+                canScroll.current=false
+                throttle(fetchMoreData,500)();
+            }
+        });
+
+        return () => {
+            node.removeEventListener("scroll", (e) => {});
+        }
+    },[movieLists]);
+
+    return (
+        <div className={"movie_scroll"}>
+            <div className={"movie_content"} ref={scrollRef}>
+                {movieLists?.map((movie, index) => (
+                    <div className={"movie_detail_items"} key={index}>
+                        <div className={"movie_detail_item_cover"}>
+                            <img src={`https://image.tmdb.org/t/p/w342/${movie.poster_path}`} alt="变形金刚"/>
+                        </div>
+                        <div className={"movie_detail_item_desc"}>
+                            {movie.overview.length===0?"暂无简介":movie.overview.length>20?movie.overview.replace(/\s+/g,"").slice(0,20)+"...":movie.overview.replace(/\s+/g,"")}
+                        </div>
+                        <div className={"movie_detail_items_tags"}>
                             <span>
                                 <Icon glyph={"emoji"} size={17} className={"movie_detail_items_tags_logo"}></Icon>
-                                {movie.title}
+                                {movie.title.length>10?movie.title.slice(0,10)+"...":movie.title}
                             </span>
-                        <span>
+                            <span>
                                 <Icon glyph={"clock"} size={17} className={"movie_detail_items_tags_time"}></Icon>
                                 <span className={"movie_detail_items_tags_time_time"}>{movie.release_date}</span>
                             </span>
+                        </div>
                     </div>
-                </div>)
-            })}
-
-
+                ))}
+            </div>
+            <div className={canScroll.current?"scroll_bottom_hidden":"scroll_bottom"}>
+                <h4>Loading</h4>
+            </div>
         </div>
-
     )
 }
