@@ -44,7 +44,7 @@ export default function Home() {
                 </div>
             </header>
 
-            <div>
+            <div className={"box_content"}>
                 <Routes>
                     <Route index element={<Movie/>}></Route>
                     <Route path="/movie"  element={<Movie/>}></Route>
