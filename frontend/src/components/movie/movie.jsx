@@ -8,7 +8,9 @@ export default function Movie() {
     const scrollRef = useRef(null);
     const isInit = useRef(false);
 
-    const canScroll = useRef(true);
+    // const canScroll = useRef(true);
+    const [currentUpdate,setCurrentUpdate]=useState(false)
+
     const [pageCount, setPageCount] = useState(0);
 
 
@@ -16,22 +18,22 @@ export default function Movie() {
 
     const [movieLists, setMovieLists] = useState([])
     useEffect(() =>{
-        if (!isInit.current){
+        if (!currentUpdate){
             isInit.current =true
+            setCurrentUpdate(true)
             let requestUrl = `${url}${pageCount+1}`
             axios.get(requestUrl).then((res) => {
                 setMovieLists(res.data.results)
                 setPageCount(res.data.page)
             }).finally(()=>{
-                canScroll.current=false
+                // canScroll.current=false
+                setCurrentUpdate(false)
                 console.log("init movie lists",pageCount)
             })
         }
 
 
         return () => {
-            isInit.current=false
-
             setMovieLists([])
         }
     },[])
@@ -41,20 +43,13 @@ export default function Movie() {
 
     let fetchMoreData = () => {
         let requestUrl = `${url}${pageCount+1}`
-        setTimeout(()=>{
-            canScroll.current=false
-        },5000)
-
-        console.log("请求url:", requestUrl)
-        canScroll.current=false
+        console.log("====请求url:", requestUrl)
         axios.get(requestUrl).then((res) => {
             if (res.data && res.data.results && res.data.results.length===0){
                 return
             }
             setMovieLists(movieLists.concat(res.data.results))
             setPageCount(res.data.page)
-        }).finally(()=>{
-            canScroll.current=false
         })
     };
 
@@ -78,22 +73,21 @@ export default function Movie() {
             return;
         }
 
-        if (canScroll.current===false){
-            canScroll.current=true
-        }else{
-            return ;
-        }
-
         node.addEventListener("scroll", (e) => {
-            if (((node.scrollHeight - node.scrollTop)-10 <= node.clientHeight) && canScroll.current) {
-                console.log("fetch more data",canScroll.current)
-                canScroll.current=false
-                throttle(fetchMoreData,()=>{
-                    // 滚动条回到指定位置第一次的位置
-                    // node.scrollTop= node.scrollHeight - node.clientHeight
-                    console.log("scroll-end:",(node.scrollHeight - node.scrollTop),node.clientHeight)
+            let clientHeight = node.clientHeight
+            let scrollTop =  node.scrollTop;
+            let scrollHeight =node.scrollHeight;
 
-                },500)();
+            // console.log("clientHeight:",clientHeight,"scrollTop:", scrollTop,"scrollHeight:",scrollHeight,canScroll.current)
+            if ((clientHeight + scrollTop >= scrollHeight)) {
+                setCurrentUpdate(true)
+                throttle(fetchMoreData,()=>{},500)();
+                setTimeout(() =>{
+                    // 设置滚动条到底部
+                    node.scrollTop = scrollHeight-300;
+
+                    setCurrentUpdate(false)
+                },2000)
             }
         });
 
@@ -127,8 +121,18 @@ export default function Movie() {
                         </div>
                     ))}
                 </div>
-                <div className={canScroll.current?"scroll_bottom":"scroll_bottom_hidden"}>
-                    <h4>Loading</h4>
+                <div className={currentUpdate?"scroll_bottom":"scroll_bottom_hidden"}>
+                    <div className="loader">
+                        <div className="square"></div>
+                        <div className="square"></div>
+                        <div className="square last"></div>
+                        <div className="square clear"></div>
+                        <div className="square"></div>
+                        <div className="square last"></div>
+                        <div className="square clear"></div>
+                        <div className="square "></div>
+                        <div className="square last"></div>
+                    </div>
                 </div>
             </div>
 
